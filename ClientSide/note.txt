@@ -1,0 +1,8 @@
+Display::setButtons : where buttoms are set
+Display::setSpriteClips : assign width and height to srite 
+Display::displayBoard : draw title screen if game not start else draw move list (and more)
+Display::drawTitleScreen : draw buttoms where the buttoms is actullay rendered (doesn't handle click logic .i.e if even if they are shown doesnt make them clickable, that is handled in Button:handleEvent)
+
+note: if multiple buttoms are overlapping clicking trigger all logic
+
+Button::handleEvent : where buttoms function are defined
