@@ -14,6 +14,7 @@
 #define NEW_GUEST_CODE "NEWGUEST"
 #define NEW_OWNER_CODE "NEWOWNER"
 #define OPPONENT_LEAVE_ROOM_CODE "OPPOLEAVE"
+#define MOVE_CODE "MOVE"
 
 void handle_client(int client_socket);
 std::string gen_random(const int len);
@@ -67,6 +68,11 @@ std::string gen_random(const int len)
   return tmp_s;
 }
 
+int coin_flip(){
+  srand(time(0));
+  return rand() % 2;
+}
+
 void handle_client(int client_socket)
 {
   char buffer[RECEIVE_BUFFER_SIZE];
@@ -117,6 +123,11 @@ void handle_client(int client_socket)
       }
       else if (!token.compare(LEAVE_ROOM_CODE))
       {
+        if (roomIndex < 0){
+          std::cout << "Player not in a room but send leave room request. Ignoring...\n";
+          continue;
+        }
+
         if (roomList[roomIndex].isOwner(threadId))
         {
           roomList[roomIndex].removeOwner();
@@ -187,7 +198,32 @@ void handle_client(int client_socket)
         }
       }
       else if (!token.compare(START_GAME_CODE)){
-        
+        if (roomIndex < 0){
+          std::cout << "Player not in a room but send start game request. Ignoring...\n";
+          continue;
+        }
+        code.assign(START_GAME_CODE);
+        int newInt = coin_flip();
+        std::cout << "coin: " << newInt << '\n';
+        std::string playerSide = newInt ? "white" : "black";
+        message = code + '\n' + playerSide + '\n';
+        roomList[roomIndex].setGameStarting(true);
+        roomList[roomIndex].setOwnerSide(newInt);
+        send(client_socket, message.c_str(), RECEIVE_BUFFER_SIZE, 0);
+      }
+      else if (!token.compare(MOVE_CODE)){
+        int moveFrom, moveTo;
+        std::getline(ss, token, '\n');
+        std::cout << token << '\n';
+        moveFrom = std::stoi(token);
+        std::getline(ss, token, '\n');
+        std::cout << token << '\n';
+        moveTo = std::stoi(token);
+
+        if(roomList[roomIndex].isOwner(threadId))
+          roomList[roomIndex].setOwnerMove(moveFrom, moveTo);
+        else
+          roomList[roomIndex].setGuestMove(moveFrom, moveTo);
       }
     }
     else if (bytes_received == 0)
@@ -225,6 +261,26 @@ void handle_client(int client_socket)
         message = code + '\n' + roomList[roomIndex].getGuestName() + '\n';
         send(client_socket, message.c_str(), RECEIVE_BUFFER_SIZE, 0);
       }
+      if (roomList[roomIndex].getGameStarting() && roomList[roomIndex].isGuest(threadId)){
+        roomList[roomIndex].setGameStarting(false);
+        code.assign(START_GAME_CODE);
+        message = code + '\n' + (roomList[roomIndex].getOwnerSide() ? "black" : "white") + '\n';
+        send(client_socket, message.c_str(), RECEIVE_BUFFER_SIZE, 0);
+      }
+
+      if (roomList[roomIndex].availableOwnerMove() && roomList[roomIndex].isGuest(threadId)){
+        code.assign(MOVE_CODE);
+        message = code + '\n' + std::to_string(roomList[roomIndex].getOwnerMoveFrom()) + '\n' + std::to_string(roomList[roomIndex].getOwnerMoveTo()) + '\n';
+        roomList[roomIndex].setOwnerMove(-1, -1);
+        send(client_socket, message.c_str(), RECEIVE_BUFFER_SIZE, 0);
+      }
+      if (roomList[roomIndex].availableGuestMove() && roomList[roomIndex].isOwner(threadId)){
+        code.assign(MOVE_CODE);
+        message = code + '\n' + std::to_string(roomList[roomIndex].getGuestMoveFrom()) + '\n' + std::to_string(roomList[roomIndex].getGuestMoveTo()) + '\n';
+        roomList[roomIndex].setGuestMove(-1, -1);
+        send(client_socket, message.c_str(), RECEIVE_BUFFER_SIZE, 0);
+      }
+
     }
   }
 

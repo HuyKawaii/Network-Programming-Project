@@ -14,8 +14,16 @@ public:
   bool isRoomFull() { return guest != std::thread::id(); };
   bool getNewGuestState() { return newGuest; };
   bool getNewOwnerState() { return newOwner; };
+  bool getGameStarting() { return isGameStarting; };
+  bool getOwnerSide() { return ownerSide; };
   std::string getOwnerName() { return ownerName; };
   std::string getGuestName() { return guestName; };
+  int getOwnerMoveFrom() { return ownerMoveFrom; };
+  int getOwnerMoveTo() { return ownerMoveTo; };
+  int getGuestMoveFrom() { return guestMoveFrom; };
+  int getGuestMoveTo() { return guestMoveTo; };
+  bool availableGuestMove() { return guestMoveFrom != -1; };
+  bool availableOwnerMove() { return ownerMoveFrom != -1; };
 
   //MUTATOR
   void setRoomOccupied(bool b) { isOccupied = b; };
@@ -24,6 +32,10 @@ public:
   void setGuest(std::thread::id guest, std::string guestName);
   void setNewGuestState(bool state) { newGuest = state; };
   void setNewOwnerState(bool state) { newOwner = state; };
+  void setGameStarting(bool state) { isGameStarting = state; };
+  void setOwnerSide(bool side) { ownerSide = side; };
+  void setGuestMove(int moveFrom, int moveTo) { guestMoveFrom = moveFrom; guestMoveTo = moveTo; };
+  void setOwnerMove(int moveFrom, int moveTo) { ownerMoveFrom = moveFrom; ownerMoveTo = moveTo; };
   void removeOwner();
   void removeGuest();
 
@@ -33,6 +45,12 @@ private:
   std::string ownerName = "";
   std::thread::id guest;
   std::string guestName = "";
+  int ownerMoveFrom = -1;
+  int ownerMoveTo = -1;
+  int guestMoveFrom = -1;
+  int guestMoveTo = -1;
+  bool ownerSide;
   bool isOccupied;
+  bool isGameStarting;
   bool newGuest, newOwner;
 };

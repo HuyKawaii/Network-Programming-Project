@@ -108,7 +108,7 @@ bool Button::handleEvent(SDL_Event* e, int& sound) {
 					else if (butt == 25){
 						if (boardPtr->getGamemode() == Board::gamemode::offline)
 							start = true;
-						else if (socketPtr->getIsOwner())
+						else if (socketPtr->getIsOwner() && socketPtr->isRoomFull())
 							socketPtr->sendStartGame();
 					}
           else if (butt == 26){

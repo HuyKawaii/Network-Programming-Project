@@ -178,9 +178,9 @@ void ClientSocket::sendStartGame()
 void ClientSocket::handleStartGame(std::string side)
 {
   if (side == "white")
-    boardPtr->setPlayerSide(Board::side::white);
+    boardPtr->setPlayerSide(WHITE);
   else
-    boardPtr->setPlayerSide(Board::side::black);
+    boardPtr->setPlayerSide(BLACK);
     
   start = true;
 }
@@ -199,6 +199,22 @@ void ClientSocket::handleNewOwner(std::string newOwnerName)
     opponentName.assign(newOwnerName);
     isOwner = false;
   }
+}
+
+void ClientSocket::sendMoveSignal(int moveFrom, int moveTo){
+  std::string code;
+  std::string message;
+  char buffer[RECEIVE_BUFFER_SIZE];
+
+  std::cout << "Sending move signal\n";
+  code.assign(MOVE_CODE);
+  message = code + '\n' + std::to_string(moveFrom) + '\n' + std::to_string(moveTo) + '\n';
+  if (send(so, message.c_str(), RECEIVE_BUFFER_SIZE, 0) == SOCKET_ERROR)
+    error("Error sending message to server. Exiting\n");
+}
+
+void ClientSocket::handleMoveSignal(int moveFrom, int moveTo){
+  boardPtr->handleInput(moveFrom, moveTo, nullptr);
 }
 
 void ClientSocket::handleBufferRead()
@@ -252,6 +268,17 @@ void ClientSocket::handleBufferRead()
         std::cout << "Token: " << token << '\n';
         handleStartGame(token);
       }
+      else if (!token.compare(MOVE_CODE))
+      {
+        int moveFrom, moveTo;
+        std::getline(ss, token, '\n');
+        std::cout << "Token: " << token << '\n';
+        moveFrom = std::stoi(token);
+        std::getline(ss, token, '\n');
+        std::cout << "Token: " << token << '\n';
+        moveTo = std::stoi(token);
+        handleMoveSignal(moveFrom, moveTo);
+      }
     }
     else if (bytes_received == 0)
     {
@@ -271,4 +298,3 @@ void ClientSocket::handleBufferRead()
     }
   } while (bytes_received > 0);
 }
-

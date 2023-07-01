@@ -35,7 +35,6 @@ class Board {
 	friend int alphaBeta(Board& b, int alpha, int beta, int depthLeft, int ext);
 	
 	public:
-    enum side {white = 0, black = 1};
     enum gamemode {nomode = 0, online = 1, offline = 2};
 		//BOARD.CPP
 		Board();
@@ -82,8 +81,7 @@ class Board {
 		bool getBlackIsBot() const { return blackIsBot; };
 		bool getFlipped() const { return flipped; };
 		unsigned long getZobrist() const { return zobrist.key; };
-    bool getOpponentIsWhite() const { return (!playerSide) == white; };
-    bool getOpponentIsBlack() const { return (!playerSide) == black; };
+	  bool getPlayerSide() { return playerSide; };
     gamemode getGamemode() const { return gamemode; };
 		//MUTATORS
 		void setMove(int mF, int mT) { moveFrom = mF; moveTo = mT; };
@@ -97,7 +95,7 @@ class Board {
 		void setWhiteIsBot(bool b) { whiteIsBot = b; };
 		void setBlackIsBot(bool b) { blackIsBot = b; };
 		void flipBoard() { flipped = flipped ? 0 : 1; };
-    void setPlayerSide(side playerSide) { this->playerSide = playerSide; };
+    void setPlayerSide(bool playerSide) { this->playerSide = playerSide; };
     void setGamemode(gamemode gamemode) { this->gamemode = gamemode; };
 		//OPERATOR OVERLOADS
 		int& operator [](const int index);
@@ -170,7 +168,7 @@ class Board {
     ClientSocket * socketPtr;
 		int board120[120], moveFrom, moveTo, ply;
 		int whiteMaterial, blackMaterial, castling;
-    side playerSide;
+    bool playerSide;
     gamemode gamemode;
 		//For the line below.. 0: none, 1: white, 2: black 
 		int sideInCheck, sideInCheckmate;

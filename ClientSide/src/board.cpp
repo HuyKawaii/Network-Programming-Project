@@ -422,17 +422,19 @@ void Board::placePieces(std::string FEN) {
 }
 
 void Board::handleInput(int& mF, int& mT, SDL_Event* e) {
-	display.handleButtons(e);
+	if (e != nullptr){
+		display.handleButtons(e);
 
-	int sound = 0;
-	for (int i = 0; i < 64; i++) {
-		display.squares[i].handleEvent(e, mF, mT, side, sound);
-		if (sound == 1)
-			Mix_PlayChannel(-1, display.mFSound, 0);
-		else if (sound == 2)
-			Mix_PlayChannel(-1, display.mTSound, 0);
+		int sound = 0;
+		for (int i = 0; i < 64; i++) {
+			display.squares[i].handleEvent(e, mF, mT, side, sound);
+			if (sound == 1)
+				Mix_PlayChannel(-1, display.mFSound, 0);
+			else if (sound == 2)
+				Mix_PlayChannel(-1, display.mTSound, 0);
+		}
 	}
-	
+
 	if (mF != -1 && mT != -1) {
 		mF = from64(mF);
 		mT = from64(mT);
@@ -442,11 +444,11 @@ void Board::handleInput(int& mF, int& mT, SDL_Event* e) {
 			changeTurn();
 			genOrderedMoveList();
 			checkCheck(getSide());
-			std::cout << "Current FEN (ply " << ply << ", move " << (ply-1)/2+1 << "): " << getFEN() << '\n';
-			std::cout << "Current Zobrist: " << zobrist.key << '\n';
+			//std::cout << "Current FEN (ply " << ply << ", move " << (ply-1)/2+1 << "): " << getFEN() << '\n';
+			//std::cout << "Current Zobrist: " << zobrist.key << '\n';
 			if (drawCheck() == 2)
 				std::cout << "Threefold repetition.\n";
-			std::cout << "-----------------------------------------------------------------------------\n\n";
+			//std::cout << "-----------------------------------------------------------------------------\n\n";
 			//eval(true);
 /*
 			std::cout << "bitboards\n--------------------------------\n";
@@ -457,6 +459,9 @@ void Board::handleInput(int& mF, int& mT, SDL_Event* e) {
 			}
 			std::cout << '\n';
 */
+			//Send signal after each move if play online
+			if (gamemode == gamemode::online)
+				socketPtr->sendMoveSignal(to64(moveFrom), to64(moveTo));
 		}
 		mF = mT = -1;
 	}

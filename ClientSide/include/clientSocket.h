@@ -11,6 +11,7 @@
 #define START_GAME_CODE "START"
 #define NEW_GUEST_CODE "NEWGUEST"
 #define NEW_OWNER_CODE "NEWOWNER"
+#define MOVE_CODE "MOVE"
 
 class Display;
 class Board;
@@ -46,8 +47,11 @@ public:
   void handleLeaveRoom();
   void sendStartGame();
   void handleStartGame(std::string side);
+  void sendMoveSignal(int moveFrom, int moveTo);
+  void handleMoveSignal(int moveFrom, int moveTo);
   void handleNewGuest(std::string newGuestName);
   void handleNewOwner(std::string newGuestName);
+  bool isRoomFull() { return opponentName != ""; };
 
 private:
   SOCKET so;

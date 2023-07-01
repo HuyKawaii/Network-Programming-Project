@@ -166,14 +166,14 @@ int main(int argc, char* args[]) {
                 board.updateDisplay(mF, mT);
             }
           }
-          // else{
-          //   if ((board.getSide() && board.getOpponentIsWhite()) ||
-          //       (!board.getSide() && board.getOpponentIsBlack())) {
-          //         //Get input from network
-          //         if ((bytes_received = recv(socket.GetClientSocket(), buffer, RECEIVE_BUFFER_SIZE, 0)) == SOCKET_ERROR)
-          //           ClientSocket::error("Failed on receive"); 
-          //       }
-          // }
+          else{
+            if (board.getSide() ^ board.getPlayerSide()) 
+            {
+                //Get input from network
+                //Stop taking move input
+                mF = mT = -1;
+            }
+          }
         } else
             mF = mT = -1;
     }
