@@ -76,6 +76,7 @@ ClientSocket::ClientSocket(std::string server_ip, unsigned short server_port)
   roomNotFound = false;
   roomFull = false;
   isOwner = false;
+  isGuestReady = false;
 }
 
 void ClientSocket::sendJoinRoom()
@@ -159,6 +160,7 @@ void ClientSocket::handleLeaveRoom()
   opponentName = "";
   roomCode = "";
   isOwner = false;
+  isGuestReady = false;
 }
 
 void ClientSocket::sendStartGame()
@@ -182,12 +184,15 @@ void ClientSocket::handleStartGame(std::string side)
   else
     boardPtr->setPlayerSide(BLACK);
     
-  start = true;
+  boardPtr->startGame();
 }
 
 void ClientSocket::handleNewGuest(std::string newGuestName)
 {
   opponentName.assign(newGuestName);
+  if (newGuestName == ""){
+    isGuestReady = false;
+  }
 }
 
 void ClientSocket::handleNewOwner(std::string newOwnerName)
@@ -215,6 +220,22 @@ void ClientSocket::sendMoveSignal(int moveFrom, int moveTo){
 
 void ClientSocket::handleMoveSignal(int moveFrom, int moveTo){
   boardPtr->handleInput(moveFrom, moveTo, nullptr);
+}
+
+void ClientSocket::sendReadySignal(){
+  std::string code;
+  std::string message;
+  char buffer[RECEIVE_BUFFER_SIZE];
+
+  std::cout << "Sending ready signal\n";
+  code.assign(READY_CODE);
+  message = code + '\n' + (isGuestReady ? std::to_string(0) : std::to_string(1)) + '\n';
+  if (send(so, message.c_str(), RECEIVE_BUFFER_SIZE, 0) == SOCKET_ERROR)
+    error("Error sending message to server. Exiting\n");
+}
+
+void ClientSocket::handleReadySignal(int readyStatus){
+  isGuestReady = readyStatus;
 }
 
 void ClientSocket::handleBufferRead()
@@ -278,6 +299,12 @@ void ClientSocket::handleBufferRead()
         std::cout << "Token: " << token << '\n';
         moveTo = std::stoi(token);
         handleMoveSignal(moveFrom, moveTo);
+      }
+      else if (!token.compare(READY_CODE))
+      {
+        std::getline(ss, token, '\n');
+        std::cout << "Token: " << token << '\n';
+        handleReadySignal(std::stoi(token));
       }
     }
     else if (bytes_received == 0)

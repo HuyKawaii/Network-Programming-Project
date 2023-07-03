@@ -17,7 +17,7 @@
 #include "ltexture.h"
 #include "square.h"
 
-#define NUMBER_OF_BUTTOMS 33
+#define NUMBER_OF_BUTTOMS 34
 #define ON_HOVER_COLOR {100, 0, 0}
 #define NUMBER_OF_INPUTFIELDS 1
 class ClientSocket;
@@ -45,6 +45,7 @@ class Display {
     void setMenu(Menu menu) {this->menu = menu; };
     void displayDefaultButtom(Button * button);
     void displayInputField(Button * button);
+		void setPlayerSideText();
 		bool init_SDL();
 		bool loadMedia();
 		void close_SDL();
@@ -77,7 +78,8 @@ class Display {
 		LTexture spriteSheetTexture, buttonTexture, titleTexture,
 			 titleTextTexture, turnText, checkText, moveText,
 			 rankText, fileText, onlineModeText, playerNameText, opponentNameText, 
-       roomCodeText, roomNotFoundText, waitForServerText, roomIsFullText;
+       roomCodeText, roomNotFoundText, waitForServerText, roomIsFullText, 
+			 playerSideText, guestReadyText;
 		SDL_Color textColor;
 		std::string rankStr, fileStr;
 };

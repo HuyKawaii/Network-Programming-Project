@@ -205,7 +205,7 @@ void Display::displayBoard(const int& mF, const int& mT) {
 	//Render all the rest of the text
 	checkText.render(renderer, BXSTART+B_SIZE-200, BYSTART+B_SIZE+40);
 	fileText.render(renderer, BXSTART+33, BYSTART+B_SIZE+10);
-
+	playerSideText.render(renderer, BXSTART+100, BYSTART+B_SIZE+40);
 	//Update screen
 	if (frameCounter > FRAME_REFRESH_RATE) {
 		SDL_RenderPresent(renderer);
@@ -283,6 +283,10 @@ void Display::setButtons() {
 	buttons[32].setPos(BXSTART+B_SIZE+320, BYSTART+450);
   buttons[32].setSize(150, 50);
   buttons[32].setButton("Join", Garamond28, textColor);
+
+	buttons[33].setPos(BXSTART+B_SIZE+229, BYSTART+590);
+	buttons[33].setSize(titleTextClips[25].w, titleTextClips[25].h);
+  buttons[33].setButton("Ready", Garamond28, textColor);
 }
 
 void Display::setSpriteClips() {
@@ -806,6 +810,18 @@ void Display::drawTitleScreen() {
 
     roomCodeText.loadFromRenderedText(renderer, "Room: " + socketPtr->getRoomCode(), textColor, Garamond28);
     roomCodeText.render(renderer, BXSTART + B_SIZE + 300, BYSTART+200);
+
+		if (!socketPtr->getIsOwner()){
+			displayDefaultButtom(&buttons[33]);
+			std::string readyText = "You are ";
+			guestReadyText.loadFromRenderedText(renderer, readyText + (socketPtr->getIsGuestReady() ? "ready" : "not ready"), textColor, Garamond28);
+			guestReadyText.render(renderer, BXSTART+B_SIZE+150, BYSTART+450);
+		}
+
+		if (socketPtr->getIsOwner() && socketPtr->isRoomFull() && !socketPtr->getIsGuestReady()){
+			guestReadyText.loadFromRenderedText(renderer, "Guest is not ready", textColor, Garamond28);
+			guestReadyText.render(renderer, BXSTART+B_SIZE+150, BYSTART+450);
+		}
   }
 
   if (menu == joinRoomMenu){
@@ -853,4 +869,10 @@ void Display::displayInputField(Button * button){
   }
 
   button->ShowButton(renderer);
+}
+
+void Display::setPlayerSideText(){
+	std::string playerText = "You play as ";
+	playerText += (boardPtr->getPlayerSide() ? "white" : "black");
+	playerSideText.loadFromRenderedText(renderer, playerText, textColor, Garamond26);
 }

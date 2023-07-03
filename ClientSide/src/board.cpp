@@ -60,6 +60,14 @@ void Board::updateDisplay(const int& mF, const int& mT) {
 	display.displayBoard(mF, mT);
 }
 
+void Board::startGame(){
+	start = true;
+	if (gamemode == gamemode::online){
+		display.setPlayerSideText();
+	}
+	socketPtr->setGuestReady(false);
+}
+
 void Board::initializeZobrist() {
 	bool color;
 	int pos;

@@ -75,7 +75,7 @@ int main(int argc, char* args[]) {
                             board.updateDisplay(mF, mT);
                             board.botMove();
                         } else if (board.display.getMenu() == Display::Menu::offlineMenu)
-                            start = true;
+                            board.startGame();
                         break;
                     case SDLK_m:
                         if (!isTyping){

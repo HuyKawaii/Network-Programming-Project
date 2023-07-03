@@ -12,6 +12,7 @@
 #define NEW_GUEST_CODE "NEWGUEST"
 #define NEW_OWNER_CODE "NEWOWNER"
 #define MOVE_CODE "MOVE"
+#define READY_CODE "READY"
 
 class Display;
 class Board;
@@ -33,11 +34,13 @@ public:
   bool getRoomFoundState() { return roomNotFound; };
   bool getRoomFull() { return roomFull; };
   bool getIsOwner() { return isOwner; };
+  bool getIsGuestReady() { return isGuestReady; };
   //MUTATOR
   void setRoomCode(std::string newRoomCode) { roomCode = newRoomCode; };
   void setDisplayPtr(Display * display);
   void setBoardPtr(Board * board);
   void setRoomFoundState(bool b) { roomNotFound = b; };
+  void setGuestReady(bool isGuestReady) { this->isGuestReady = isGuestReady; };
 
   void sendJoinRoom();
   void handleJoinRoom(std::string reply, std::string opponentName);
@@ -49,6 +52,8 @@ public:
   void handleStartGame(std::string side);
   void sendMoveSignal(int moveFrom, int moveTo);
   void handleMoveSignal(int moveFrom, int moveTo);
+  void sendReadySignal();
+  void handleReadySignal(int readyStatus);
   void handleNewGuest(std::string newGuestName);
   void handleNewOwner(std::string newGuestName);
   bool isRoomFull() { return opponentName != ""; };
@@ -61,6 +66,7 @@ private:
   bool roomNotFound;
   bool roomFull;
   bool isOwner;
+  bool isGuestReady;
   Display* displayPtr;
   Board* boardPtr;
 };

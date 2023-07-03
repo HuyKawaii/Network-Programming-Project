@@ -107,8 +107,8 @@ bool Button::handleEvent(SDL_Event* e, int& sound) {
 					//Start
 					else if (butt == 25){
 						if (boardPtr->getGamemode() == Board::gamemode::offline)
-							start = true;
-						else if (socketPtr->getIsOwner() && socketPtr->isRoomFull())
+							boardPtr->startGame();
+						else if (socketPtr->getIsOwner() && socketPtr->isRoomFull() && socketPtr->getIsGuestReady())
 							socketPtr->sendStartGame();
 					}
           else if (butt == 26){
@@ -152,6 +152,10 @@ bool Button::handleEvent(SDL_Event* e, int& sound) {
 						if (displayPtr->getMenu() == Display::Menu::joinRoomMenu){
 							socketPtr->sendJoinRoom();
 						}
+					}
+					else if (butt == 33){
+						if (displayPtr->getMenu() == Display::Menu::roomMenu && !socketPtr->getIsOwner())
+							socketPtr->sendReadySignal();
 					}
 					break;
 					case SDL_MOUSEBUTTONUP:

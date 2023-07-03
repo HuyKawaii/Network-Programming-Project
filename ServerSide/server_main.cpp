@@ -15,6 +15,7 @@
 #define NEW_OWNER_CODE "NEWOWNER"
 #define OPPONENT_LEAVE_ROOM_CODE "OPPOLEAVE"
 #define MOVE_CODE "MOVE"
+#define READY_CODE "READY"
 
 void handle_client(int client_socket);
 std::string gen_random(const int len);
@@ -225,6 +226,16 @@ void handle_client(int client_socket)
         else
           roomList[roomIndex].setGuestMove(moveFrom, moveTo);
       }
+      else if (!token.compare(READY_CODE)){
+        std::getline(ss, token, '\n');
+        std::cout << token << '\n';
+        roomList[roomIndex].setGuestReady(std::stoi(token));
+        roomList[roomIndex].setNewGuestReady(true);
+
+        code.assign(READY_CODE);
+        message = code + '\n' + token + '\n';
+        send(client_socket, message.c_str(), RECEIVE_BUFFER_SIZE, 0);
+      }
     }
     else if (bytes_received == 0)
     {
@@ -280,7 +291,12 @@ void handle_client(int client_socket)
         roomList[roomIndex].setGuestMove(-1, -1);
         send(client_socket, message.c_str(), RECEIVE_BUFFER_SIZE, 0);
       }
-
+      if (roomList[roomIndex].getNewGuestReady() && roomList[roomIndex].isOwner(threadId)){
+        code.assign(READY_CODE);
+        message = code + '\n' + (roomList[roomIndex].getGuestReady() ? std::to_string(1) : std::to_string(0)) + '\n';
+        send(client_socket, message.c_str(), RECEIVE_BUFFER_SIZE, 0);
+        roomList[roomIndex].setNewGuestReady(false);
+      }
     }
   }
 

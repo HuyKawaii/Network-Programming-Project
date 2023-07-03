@@ -40,6 +40,7 @@ class Board {
 		Board();
 		Board(ClientSocket * socket);
 		Board(std::string FEN, ClientSocket * socket);
+		void startGame();
 		void initializeVars();
 		void emptyBoard();
 		void botMove();
