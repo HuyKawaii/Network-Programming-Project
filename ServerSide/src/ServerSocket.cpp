@@ -221,12 +221,12 @@ void ServerSocket::handleLeaveRoomSignal(int client_socket, std::stringstream& s
   }
   else if (roomList[roomIndex].isGuest(std::this_thread::get_id()))
   {
+    std::cout << "Room " << roomIndex << " with code " << roomList[roomIndex].getRoomCode() << "has lost its guest\n";
     roomList[roomIndex].removeGuest();
     roomIndex = -1;
     code.assign(LEAVE_ROOM_CODE);
     message = code + '\n';
     send(client_socket, message.c_str(), RECEIVE_BUFFER_SIZE, 0);
-    std::cout << "Room " << roomIndex << " with code " << roomList[roomIndex].getRoomCode() << "has lost its guest\n";
   }
   else
   {

@@ -271,11 +271,11 @@ void Display::setButtons()
 	buttons[25]->setButton("Start", Garamond28, textColor);
 
 	// Online
-	buttons[26]->setPos(BXSTART + B_SIZE + 220, BYSTART + 400);
+	buttons[26]->setPos(BXSTART + B_SIZE + 200, BYSTART + 400);
 	buttons[26]->setSize(150, 50);
 	buttons[26]->setButton("Online Mode", Garamond28, textColor);
 	// Offline
-	buttons[27]->setPos(BXSTART + B_SIZE + 220, BYSTART + 300);
+	buttons[27]->setPos(BXSTART + B_SIZE + 200, BYSTART + 300);
 	buttons[27]->setSize(150, 50);
 	buttons[27]->setButton("Offline Mode", Garamond28, textColor);
 
@@ -317,7 +317,7 @@ void Display::setButtons()
 	buttons[35]->setSize(titleTextClips[25].w, titleTextClips[25].h);
 	buttons[35]->setButton(PASSWORD_PLACEHOLDER, Garamond28, textColor);
 
-	buttons[36]->setPos(BXSTART + B_SIZE + 229, BYSTART + 590);
+	buttons[36]->setPos(BXSTART + B_SIZE + 240, BYSTART + 590);
 	buttons[36]->setSize(titleTextClips[25].w, titleTextClips[25].h);
 	buttons[36]->setButton("Sign in", Garamond28, textColor);
 
@@ -941,10 +941,10 @@ void Display::drawTitleScreen()
 		playerNameText.render(renderer, BXSTART + B_SIZE + 100, BYSTART + 300);
 
 		opponentNameText.loadFromRenderedText(renderer, socketPtr->getOpponentName(), textColor, Garamond28);
-		opponentNameText.render(renderer, BXSTART + B_SIZE + 200, BYSTART + 300);
+		opponentNameText.render(renderer, BXSTART + B_SIZE + 300, BYSTART + 300);
 
 		roomCodeText.loadFromRenderedText(renderer, "Room: " + socketPtr->getRoomCode(), textColor, Garamond28);
-		roomCodeText.render(renderer, BXSTART + B_SIZE + 300, BYSTART + 200);
+		roomCodeText.render(renderer, BXSTART + B_SIZE + 300, BYSTART + 220);
 
 		if (!socketPtr->getIsOwner())
 		{
