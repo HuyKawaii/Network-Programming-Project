@@ -1,3 +1,6 @@
+#ifndef ROOM_H
+#define ROOM_H
+
 #include <string>
 #include <thread>
 
@@ -64,3 +67,5 @@ private:
   bool guestResign;
   bool newGuest, newOwner, newGuestReady;
 };
+
+#endif

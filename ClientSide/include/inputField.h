@@ -6,12 +6,14 @@
 class InputField : public Button{
 public:
   InputField();
-  //ACCESSOR
-  bool getSelected() { return isSelected; };
+  ~InputField(){};
 
-  //MUTATOR
-  void unselectField() { isSelected = false; };
-  void selectField() { isSelected = true; };
+  bool handleEvent (SDL_Event* e, int& sound) override;
+  //ACCESSOR
+  bool getIsEditing() const { return isEditing; };
+
 private:
-  bool isSelected;
+  void setInputFieldEditing(std::string defaultValue);
+  void setInputFieldNotEditing();
+  bool isEditing;
 };

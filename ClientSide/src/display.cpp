@@ -12,8 +12,9 @@
 #include <vector>
 #include "board.h"
 #include "common.h"
-#include "display.h"
+#include "inputField.h"
 #include "clientSocket.h"
+#include "display.h"
 
 Display::Display(Board *b, ClientSocket *socket) : boardPtr(b), socketPtr(socket)
 {
@@ -21,12 +22,6 @@ Display::Display(Board *b, ClientSocket *socket) : boardPtr(b), socketPtr(socket
 	menu = loginMenu;
 	textColor = {0, 0, 0};
 	sideFlag = !boardPtr->getSide();
-	for (int i = 0; i < NUMBER_OF_BUTTOMS; i++)
-	{
-		buttons[i].setBoardPtr(boardPtr);
-		buttons[i].setDisplayPtr(this);
-		buttons[i].setSocketPtr(socket);
-	}
 
 	window = NULL;
 	renderer = NULL;
@@ -236,90 +231,102 @@ void Display::displayBoard(const int &mF, const int &mT)
 void Display::setButtons()
 {
 	for (int i = 0; i < NUMBER_OF_BUTTOMS; i++)
-		buttons[i].setButt(i);
+		buttons[i] = new Button();
+
 	// Restart and undo
-	buttons[0].setPos(1185, 25);
-	buttons[0].setSize(51, 31);
-	buttons[1].setPos(buttons[0].getX(), buttons[0].getY() + 50);
-	buttons[1].setSize(51, 31);
+	buttons[0]->setPos(1185, 25);
+	buttons[0]->setSize(51, 31);
+	
+	buttons[1]->setPos(buttons[0]->getX(), buttons[0]->getY() + 50);
+	buttons[1]->setSize(51, 31);
 
 	// Human, computer (white and black)
 	for (int i = 2; i < 6; i++)
 	{
-		buttons[i].setPos(BXSTART + B_SIZE + 115 + ((i - 2) % 2) * 200,
+		buttons[i]->setPos(BXSTART + B_SIZE + 115 + ((i - 2) % 2) * 200,
 											BYSTART + 250 + (i / 4) * 150);
-		buttons[i].setSize(titleTextClips[i].w, titleTextClips[i].h);
+		buttons[i]->setSize(titleTextClips[i].w, titleTextClips[i].h);
 	}
-	buttons[2].setButton("Human", Garamond28, textColor);
-	buttons[3].setButton("Computer", Garamond28, textColor);
-	buttons[4].setButton("Human", Garamond28, textColor);
-	buttons[5].setButton("Computer", Garamond28, textColor);
+	buttons[2]->setButton("Human", Garamond28, textColor);
+	buttons[3]->setButton("Computer", Garamond28, textColor);
+	buttons[4]->setButton("Human", Garamond28, textColor);
+	buttons[5]->setButton("Computer", Garamond28, textColor);
 
 	// 1-9 (white and black)
 	for (int i = 6; i < 24; i++)
 	{
-		buttons[i].setPos(BXSTART + B_SIZE + 275 + (i - 6) % 9 * titleTextClips[i].w,
+		buttons[i]->setPos(BXSTART + B_SIZE + 275 + (i - 6) % 9 * titleTextClips[i].w,
 											BYSTART + 300 + (i / 15) * 150);
-		buttons[i].setSize(titleTextClips[i].w, titleTextClips[i].h);
-		buttons[i].setButton(std::to_string((i + 5) % 10), Garamond28, textColor);
+		buttons[i]->setSize(titleTextClips[i].w, titleTextClips[i].h);
+		buttons[i]->setButton(std::to_string((i + 5) % 10), Garamond28, textColor);
 	}
 
 	// Flip board
-	buttons[24].setPos(BXSTART + B_SIZE + 199, BYSTART + 520);
-	buttons[24].setSize(titleTextClips[24].w, titleTextClips[24].h);
-	buttons[24].setButton("Flip board", Garamond28, textColor);
+	buttons[24]->setPos(BXSTART + B_SIZE + 199, BYSTART + 520);
+	buttons[24]->setSize(titleTextClips[24].w, titleTextClips[24].h);
+	buttons[24]->setButton("Flip board", Garamond28, textColor);
 	// Start, and light version
-	buttons[25].setPos(BXSTART + B_SIZE + 229, BYSTART + 590);
-	buttons[25].setSize(titleTextClips[25].w, titleTextClips[25].h);
-	buttons[25].setButton("Start", Garamond28, textColor);
+	buttons[25]->setPos(BXSTART + B_SIZE + 229, BYSTART + 590);
+	buttons[25]->setSize(titleTextClips[25].w, titleTextClips[25].h);
+	buttons[25]->setButton("Start", Garamond28, textColor);
 
 	// Online
-	buttons[26].setPos(BXSTART + B_SIZE + 220, BYSTART + 400);
-	buttons[26].setSize(150, 50);
-	buttons[26].setButton("Online Mode", Garamond28, textColor);
+	buttons[26]->setPos(BXSTART + B_SIZE + 220, BYSTART + 400);
+	buttons[26]->setSize(150, 50);
+	buttons[26]->setButton("Online Mode", Garamond28, textColor);
 	// Offline
-	buttons[27].setPos(BXSTART + B_SIZE + 220, BYSTART + 300);
-	buttons[27].setSize(150, 50);
-	buttons[27].setButton("Offline Mode", Garamond28, textColor);
+	buttons[27]->setPos(BXSTART + B_SIZE + 220, BYSTART + 300);
+	buttons[27]->setSize(150, 50);
+	buttons[27]->setButton("Offline Mode", Garamond28, textColor);
 
 	// BackToMain
-	buttons[28].setPos(BXSTART + B_SIZE + 380, BYSTART + 180);
-	buttons[28].setSize(150, 50);
-	buttons[28].setButton("Mainmenu", Garamond28, textColor);
+	buttons[28]->setPos(BXSTART + B_SIZE + 380, BYSTART + 180);
+	buttons[28]->setSize(150, 50);
+	buttons[28]->setButton("Mainmenu", Garamond28, textColor);
 
 	// CreateRoom
-	buttons[29].setPos(BXSTART + B_SIZE + 110, BYSTART + 350);
-	buttons[29].setSize(150, 50);
-	buttons[29].setButton("Create room", Garamond28, textColor);
+	buttons[29]->setPos(BXSTART + B_SIZE + 110, BYSTART + 350);
+	buttons[29]->setSize(150, 50);
+	buttons[29]->setButton("Create room", Garamond28, textColor);
 	// Joinroom
-	buttons[30].setPos(BXSTART + B_SIZE + 330, BYSTART + 350);
-	buttons[30].setSize(150, 50);
-	buttons[30].setButton("Join room", Garamond28, textColor);
+	buttons[30]->setPos(BXSTART + B_SIZE + 330, BYSTART + 350);
+	buttons[30]->setSize(150, 50);
+	buttons[30]->setButton("Join room", Garamond28, textColor);
 
 	// Roomcode input field
-	buttons[31].setPos(BXSTART + B_SIZE + 300, BYSTART + 400);
-	buttons[31].setSize(150, 50);
-	buttons[31].setButton(ROOM_CODE_PLACEHOLDER, Garamond28, textColor);
+	buttons[31]	= new InputField();
+	buttons[31]->setPos(BXSTART + B_SIZE + 300, BYSTART + 400);
+	buttons[31]->setSize(150, 50);
+	buttons[31]->setButton(ROOM_CODE_PLACEHOLDER, Garamond28, textColor);
 
-	buttons[32].setPos(BXSTART + B_SIZE + 320, BYSTART + 450);
-	buttons[32].setSize(150, 50);
-	buttons[32].setButton("Join", Garamond28, textColor);
+	buttons[32]->setPos(BXSTART + B_SIZE + 320, BYSTART + 450);
+	buttons[32]->setSize(150, 50);
+	buttons[32]->setButton("Join", Garamond28, textColor);
 
-	buttons[33].setPos(BXSTART + B_SIZE + 229, BYSTART + 590);
-	buttons[33].setSize(titleTextClips[25].w, titleTextClips[25].h);
-	buttons[33].setButton("Ready", Garamond28, textColor);
+	buttons[33]->setPos(BXSTART + B_SIZE + 229, BYSTART + 590);
+	buttons[33]->setSize(titleTextClips[25].w, titleTextClips[25].h);
+	buttons[33]->setButton("Ready", Garamond28, textColor);
 
-	buttons[34].setPos(BXSTART + B_SIZE + 229, BYSTART + 400);
-	buttons[34].setSize(titleTextClips[25].w, titleTextClips[25].h);
-	buttons[34].setButton(USERNAME_PLACEHOLDER, Garamond28, textColor);
+	buttons[34]	= new InputField();
+	buttons[34]->setPos(BXSTART + B_SIZE + 229, BYSTART + 400);
+	buttons[34]->setSize(titleTextClips[25].w, titleTextClips[25].h);
+	buttons[34]->setButton(USERNAME_PLACEHOLDER, Garamond28, textColor);
 
-	buttons[35].setPos(BXSTART + B_SIZE + 229, BYSTART + 500);
-	buttons[35].setSize(titleTextClips[25].w, titleTextClips[25].h);
-	buttons[35].setButton(PASSWORD_PLACEHOLDER, Garamond28, textColor);
+	buttons[35]	= new InputField();
+	buttons[35]->setPos(BXSTART + B_SIZE + 229, BYSTART + 500);
+	buttons[35]->setSize(titleTextClips[25].w, titleTextClips[25].h);
+	buttons[35]->setButton(PASSWORD_PLACEHOLDER, Garamond28, textColor);
 
-	buttons[36].setPos(BXSTART + B_SIZE + 229, BYSTART + 590);
-	buttons[36].setSize(titleTextClips[25].w, titleTextClips[25].h);
-	buttons[36].setButton("Sign in", Garamond28, textColor);
+	buttons[36]->setPos(BXSTART + B_SIZE + 229, BYSTART + 590);
+	buttons[36]->setSize(titleTextClips[25].w, titleTextClips[25].h);
+	buttons[36]->setButton("Sign in", Garamond28, textColor);
+
+	for (int i = 0; i < NUMBER_OF_BUTTOMS; i++){
+		buttons[i]->setButt(i);
+		buttons[i]->setBoardPtr(boardPtr);
+		buttons[i]->setDisplayPtr(this);
+		buttons[i]->setSocketPtr(socketPtr);
+	}
 }
 
 void Display::setSpriteClips()
@@ -449,11 +456,11 @@ void Display::drawButtons()
 	SDL_Rect clipSq;
 	for (int i = 0; i < 2; i++)
 	{
-		if (buttons[i].getInside())
-			clipSq = buttons[i].getClicking() ? buttonClips[i + 4] : buttonClips[i + 2];
+		if (buttons[i]->getInside())
+			clipSq = buttons[i]->getClicking() ? buttonClips[i + 4] : buttonClips[i + 2];
 		else
 			clipSq = buttonClips[i];
-		buttonTexture.render(renderer, buttons[i].getX(), buttons[i].getY(), &clipSq);
+		buttonTexture.render(renderer, buttons[i]->getX(), buttons[i]->getY(), &clipSq);
 	}
 }
 
@@ -843,30 +850,30 @@ void Display::drawTitleScreen()
 		clipSq = titleTextClips[0];
 		titleTextTexture.render(renderer, BXSTART + B_SIZE + 224, BYSTART + 200, &clipSq);
 		//"Human"
-		if (buttons[2].getInside() || !boardPtr->getWhiteIsBot())
-			buttons[2].setButtonTextColor({100, 0, 0});
+		if (buttons[2]->getInside() || !boardPtr->getWhiteIsBot())
+			buttons[2]->setButtonTextColor({100, 0, 0});
 		else
-			buttons[2].setButtonTextColor({0, 0, 0});
-		buttons[2].ShowButton(renderer);
+			buttons[2]->setButtonTextColor({0, 0, 0});
+		buttons[2]->ShowButton(renderer);
 
 		//"Computer"
-		if (buttons[3].getInside() || boardPtr->getWhiteIsBot())
-			buttons[3].setButtonTextColor({100, 0, 0});
+		if (buttons[3]->getInside() || boardPtr->getWhiteIsBot())
+			buttons[3]->setButtonTextColor({100, 0, 0});
 		else
-			buttons[3].setButtonTextColor({0, 0, 0});
-		buttons[3].ShowButton(renderer);
+			buttons[3]->setButtonTextColor({0, 0, 0});
+		buttons[3]->ShowButton(renderer);
 
 		// Numbers 1-9
 		if (boardPtr->getWhiteIsBot())
 		{
 			for (int i = 1; i < 10; i++)
 			{
-				if (buttons[i + 5].getInside() ||
+				if (buttons[i + 5]->getInside() ||
 						boardPtr->whiteBot.getLevel() == i)
-					buttons[i + 5].setButtonTextColor({100, 0, 0});
+					buttons[i + 5]->setButtonTextColor({100, 0, 0});
 				else
-					buttons[i + 5].setButtonTextColor({0, 0, 0});
-				buttons[i + 5].ShowButton(renderer);
+					buttons[i + 5]->setButtonTextColor({0, 0, 0});
+				buttons[i + 5]->ShowButton(renderer);
 			}
 		}
 
@@ -875,56 +882,56 @@ void Display::drawTitleScreen()
 		clipSq = titleTextClips[1];
 		titleTextTexture.render(renderer, BXSTART + B_SIZE + 224, BYSTART + 350, &clipSq);
 		//"Human"
-		if (buttons[4].getInside() || !boardPtr->getBlackIsBot())
-			buttons[4].setButtonTextColor({100, 0, 0});
+		if (buttons[4]->getInside() || !boardPtr->getBlackIsBot())
+			buttons[4]->setButtonTextColor({100, 0, 0});
 		else
-			buttons[4].setButtonTextColor({0, 0, 0});
-		buttons[4].ShowButton(renderer);
+			buttons[4]->setButtonTextColor({0, 0, 0});
+		buttons[4]->ShowButton(renderer);
 		//"Computer"
-		if (buttons[5].getInside() || boardPtr->getBlackIsBot())
-			buttons[5].setButtonTextColor({100, 0, 0});
+		if (buttons[5]->getInside() || boardPtr->getBlackIsBot())
+			buttons[5]->setButtonTextColor({100, 0, 0});
 		else
-			buttons[5].setButtonTextColor({0, 0, 0});
-		buttons[5].ShowButton(renderer);
+			buttons[5]->setButtonTextColor({0, 0, 0});
+		buttons[5]->ShowButton(renderer);
 		// Numbers 1-9
 		if (boardPtr->getBlackIsBot())
 		{
 			for (int i = 1; i < 10; i++)
 			{
-				if (buttons[i + 14].getInside() ||
+				if (buttons[i + 14]->getInside() ||
 						boardPtr->blackBot.getLevel() == i)
-					buttons[i + 14].setButtonTextColor({100, 0, 0});
+					buttons[i + 14]->setButtonTextColor({100, 0, 0});
 				else
-					buttons[i + 14].setButtonTextColor({0, 0, 0});
-				buttons[i + 14].ShowButton(renderer);
+					buttons[i + 14]->setButtonTextColor({0, 0, 0});
+				buttons[i + 14]->ShowButton(renderer);
 			}
 		}
 	}
 	//"Flip board"
 	if (menu != loginMenu)
-		displayDefaultButtom(&buttons[24]);
+		displayDefaultButtom(buttons[24]);
 
 	//"Start"
 	if (boardPtr->getGamemode() == Board::gamemode::offline || socketPtr->getIsOwner())
-		displayDefaultButtom(&buttons[25]);
+		displayDefaultButtom(buttons[25]);
 
 	//"Online" "Offline"
 	if (menu == mainMenu)
 	{
 		for (int i = 26; i < 28; i++)
 		{
-			displayDefaultButtom(&buttons[i]);
+			displayDefaultButtom(buttons[i]);
 		}
 	}
 	else if (menu != loginMenu)
 	{ // Mainmenu
-		displayDefaultButtom(&buttons[28]);
+		displayDefaultButtom(buttons[28]);
 	}
 
 	if (menu == onlineMenu)
 	{
-		displayDefaultButtom(&buttons[29]);
-		displayDefaultButtom(&buttons[30]);
+		displayDefaultButtom(buttons[29]);
+		displayDefaultButtom(buttons[30]);
 	}
 
 	if (menu == roomMenu)
@@ -941,7 +948,7 @@ void Display::drawTitleScreen()
 
 		if (!socketPtr->getIsOwner())
 		{
-			displayDefaultButtom(&buttons[33]);
+			displayDefaultButtom(buttons[33]);
 			std::string readyText = "You are ";
 			guestReadyText.loadFromRenderedText(renderer, readyText + (socketPtr->getIsGuestReady() ? "ready" : "not ready"), textColor, Garamond28);
 			guestReadyText.render(renderer, BXSTART + B_SIZE + 150, BYSTART + 450);
@@ -956,8 +963,8 @@ void Display::drawTitleScreen()
 
 	if (menu == joinRoomMenu)
 	{
-		displayInputField(&buttons[31]);
-		displayDefaultButtom(&buttons[32]);
+		displayInputField(dynamic_cast<InputField*>(buttons[31]));
+		displayDefaultButtom(buttons[32]);
 
 		if (socketPtr->getRoomFoundState())
 		{
@@ -973,9 +980,9 @@ void Display::drawTitleScreen()
 
 	if (menu == loginMenu)
 	{
-		displayInputField(&buttons[34]);
-		displayInputField(&buttons[35]);
-		displayDefaultButtom(&buttons[36]);
+		displayInputField(dynamic_cast<InputField*>(buttons[34]));
+		displayInputField(dynamic_cast<InputField*>(buttons[35]));
+		displayDefaultButtom(buttons[36]);
 	}
 }
 
@@ -985,13 +992,14 @@ void Display::handleButtons(SDL_Event *e)
 	isTyping = false;
 	for (int i = 0; i < NUMBER_OF_BUTTOMS; i++)
 	{
-		buttons[i].handleEvent(e, sound);
+		buttons[i]->handleEvent(e, sound);
 		if (sound == 1)
 			Mix_PlayChannel(-1, mFSound, 0);
 		else if (sound == 2)
 			Mix_PlayChannel(-1, mTSound, 0);
 
-		if (buttons[i].getIsEditing())
+		InputField* inputField = dynamic_cast<InputField*>(buttons[i]);
+		if (inputField != nullptr && inputField->getIsEditing())
 			isTyping = true;
 	}
 }
@@ -1005,20 +1013,20 @@ void Display::displayDefaultButtom(Button *button)
 	button->ShowButton(renderer);
 }
 
-void Display::displayInputField(Button *button)
+void Display::displayInputField(InputField *inputField)
 {
-	if (button->getIsEditing())
+	if (inputField->getIsEditing())
 	{
-		button->setButtonText(inputText);
-		if (button->getButt() == 31)
+		inputField->setButtonText(inputText);
+		if (inputField->getButt() == 31)
 			socketPtr->setRoomCode(inputText);
-		if (button->getButt() == 34)
+		if (inputField->getButt() == 34)
 			socketPtr->setUsername(inputText);
-		if (button->getButt() == 35)
+		if (inputField->getButt() == 35)
 			socketPtr->setPassword(inputText);
 	}
 
-	button->ShowButton(renderer);
+	inputField->ShowButton(renderer);
 }
 
 void Display::setPlayerSideText()

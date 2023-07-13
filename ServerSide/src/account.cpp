@@ -3,9 +3,11 @@
 Account::Account(){
 }
 
-Account::Account(std::string username, std::string password, std::string status){
+Account::Account(std::string username, std::string password, std::string name, std::string status){
   this->username.assign(username);
   this->password.assign(password);
+  this->name.assign(name);
+  
   if (status == "logged_out")
     this->status = logged_out;
   else if (status == "logged_in")

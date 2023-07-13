@@ -143,7 +143,7 @@ int main(int argc, char* args[]) {
             }
             else if (e.type == SDL_TEXTINPUT) {
                 //Not copy or pasting
-                if( !( SDL_GetModState() & KMOD_CTRL && ( e.text.text[ 0 ] == 'c' || e.text.text[ 0 ] == 'C' || e.text.text[ 0 ] == 'v' || e.text.text[ 0 ] == 'V' ) ) )
+                if(isTyping && !( SDL_GetModState() & KMOD_CTRL && ( e.text.text[ 0 ] == 'c' || e.text.text[ 0 ] == 'C' || e.text.text[ 0 ] == 'v' || e.text.text[ 0 ] == 'V' ) ) )
                 {
                   //Append character
                   inputText += e.text.text;

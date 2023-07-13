@@ -18,7 +18,7 @@
 Button::Button() {
 	pos.x = pos.y = 0;
 	w = h = 0;
-	inside = clicking = isEditing = false;
+	inside = clicking = false;
 	butt = 0;
 	boardPtr = NULL;
 }
@@ -146,11 +146,6 @@ bool Button::handleEvent(SDL_Event* e, int& sound) {
 							socketPtr->setRoomFoundState(false);
 						}
 					}
-          else if (butt == 31){
-						if (displayPtr->getMenu() == Display::Menu::joinRoomMenu){
-							setButtonEditing(ROOM_CODE_PLACEHOLDER);
-						}
-					}
 					else if (butt == 32){
 						if (displayPtr->getMenu() == Display::Menu::joinRoomMenu){
 							socketPtr->sendJoinRoom();
@@ -159,16 +154,6 @@ bool Button::handleEvent(SDL_Event* e, int& sound) {
 					else if (butt == 33){
 						if (displayPtr->getMenu() == Display::Menu::roomMenu && !socketPtr->getIsOwner())
 							socketPtr->sendReadySignal();
-					}
-					else if (butt == 34){
-						if (displayPtr->getMenu() == Display::Menu::loginMenu){
-							setButtonEditing(USERNAME_PLACEHOLDER);
-						}
-					}
-					else if (butt == 35){
-						if (displayPtr->getMenu() == Display::Menu::loginMenu){
-							setButtonEditing(PASSWORD_PLACEHOLDER);
-						}
 					}
 					else if (butt == 36){
 						if (displayPtr->getMenu() == Display::Menu::loginMenu){
@@ -184,16 +169,6 @@ bool Button::handleEvent(SDL_Event* e, int& sound) {
       switch (e->type) { 
 					case SDL_MOUSEBUTTONDOWN:
 					clicking = true;
-
-          if(butt == 31){
-            setButtonNotEditing();
-          }
-					if(butt == 34){
-            setButtonNotEditing();
-          }
-					if(butt == 35){
-            setButtonNotEditing();
-          }
           break;
 					case SDL_MOUSEBUTTONUP:
 					clicking = false;
@@ -214,13 +189,4 @@ void Button::setButton(std::string newText, TTF_Font* newFont, SDL_Color newColo
   setButtonTextColor(newColor);
 }
 
-void Button::setButtonEditing(std::string defaultValue){
-	if (defaultValue == buttonText)
-		buttonText = "";
-  isEditing = true;
-  inputText.assign(buttonText);
-}
 
-void Button::setButtonNotEditing(){
-  isEditing = false;
-}

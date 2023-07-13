@@ -1,10 +1,16 @@
+#ifndef ACCOUNT_H
+#define ACCOUNT_H
+
 #include <string>
 
 class Account{
 public:
   enum Status {logged_out, logged_in, blocked, wrong_password};
   Account();
-  Account(std::string username, std::string password, std::string status);
+  Account(std::string username, std::string password, std::string name, std::string status);
+
+  //ACCESSOR
+  std::string getName() { return name; };
 
   Status attempLogin(std::string username, std::string password);
   static std::string Stringify(Status status){
@@ -34,6 +40,9 @@ private:
   static const int max_failed_attemp = 3;
   std::string username;
   std::string password;
+  std::string name;
   Status status;
   int failedAttemp = 0;
 };
+
+#endif

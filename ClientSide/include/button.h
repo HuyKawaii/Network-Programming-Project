@@ -25,7 +25,7 @@ class Button {
 	public:
 		Button();
 
-		bool handleEvent(SDL_Event* e, int& sound);
+		virtual bool handleEvent(SDL_Event* e, int& sound);
     void ShowButton(SDL_Renderer* renderer);
 		//ACCESSORS
 		int getX() const { return pos.x; };
@@ -35,7 +35,6 @@ class Button {
 		int getButt() { return butt; };
 		bool getInside() const { return inside; };
 		bool getClicking() const { return clicking; };
-    bool getIsEditing() const { return isEditing; };
     std::string getButtonText() const { return buttonText; };
 		//MUTATORS
 		void setInside(bool b) { inside = b; };
@@ -52,21 +51,21 @@ class Button {
     void setButtonTextColor(SDL_Color newColor) { buttonTextColor = newColor; };
     void setButtonTextFont(TTF_Font* newFont) {buttonTextFont = newFont; };
     void setButton(std::string newText, TTF_Font* newFont, SDL_Color newColor);
-    void setButtonEditing(std::string defaultValue);
-    void setButtonNotEditing();
+    
 	private:
+		int w, h;
+		SDL_Point pos;
+    SDL_Color buttonTextColor;
+    LTexture buttonTexture;
+    TTF_Font* buttonTextFont;
+
+	protected:
 		Board * boardPtr;
     Display * displayPtr;
     ClientSocket * socketPtr;
 		int butt;	//Which button it is
-		int w, h;
 		bool inside, clicking;
-		SDL_Point pos;
     std::string buttonText;
-    SDL_Color buttonTextColor;
-    LTexture buttonTexture;
-    TTF_Font* buttonTextFont;
-    bool isEditing;
 };
 
 #endif

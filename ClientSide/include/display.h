@@ -13,14 +13,16 @@
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_mixer.h>
-#include "button.h"
 #include "ltexture.h"
 #include "square.h"
+#include "button.h"
 
 #define NUMBER_OF_BUTTOMS 37
 #define ON_HOVER_COLOR {100, 0, 0}
 #define NUMBER_OF_INPUTFIELDS 1
+
 class ClientSocket;
+class InputField;
 
 class Display {
 	friend class Board;
@@ -44,7 +46,7 @@ class Display {
 		void handleButtons(SDL_Event* e);
     void setMenu(Menu menu) {this->menu = menu; };
     void displayDefaultButtom(Button * button);
-    void displayInputField(Button * button);
+    void displayInputField(InputField * button);
 		void setPlayerSideText();
 		bool init_SDL();
 		bool loadMedia();
@@ -74,7 +76,7 @@ class Display {
 		TTF_Font* Garamond26, *Garamond28, *Cicero22, *Cicero26;
 		Mix_Chunk* mTSound, *mFSound;
 		SDL_Rect spriteClips[12], buttonClips[6], titleTextClips[28];
-		Button buttons[NUMBER_OF_BUTTOMS];
+		Button* buttons[NUMBER_OF_BUTTOMS];
 		LTexture spriteSheetTexture, buttonTexture, titleTexture,
 			 titleTextTexture, turnText, checkText, moveText,
 			 rankText, fileText, onlineModeText, playerNameText, opponentNameText, 
