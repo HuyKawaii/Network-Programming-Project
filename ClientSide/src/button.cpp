@@ -61,6 +61,9 @@ bool Button::handleEvent(SDL_Event* e, int& sound) {
 					}
 					//Restart button
 					if (butt == 0) {
+						if (start && boardPtr->getGamemode() == Board::gamemode::online && boardPtr->getWinner() == 0){
+							socketPtr->sendResignSignal();
+						}
 						boardPtr->restart();
 						return true;
 					}
@@ -101,7 +104,7 @@ bool Button::handleEvent(SDL_Event* e, int& sound) {
 					}
 					//Flip board
 					else if (butt == 24){
-						if (!start) 
+						if (!start && displayPtr->getMenu() != Display::Menu::loginMenu) 
 							boardPtr->flipBoard();
 					}
 					//Start
@@ -145,7 +148,7 @@ bool Button::handleEvent(SDL_Event* e, int& sound) {
 					}
           else if (butt == 31){
 						if (displayPtr->getMenu() == Display::Menu::joinRoomMenu){
-							setButtonEditing();
+							setButtonEditing(ROOM_CODE_PLACEHOLDER);
 						}
 					}
 					else if (butt == 32){
@@ -156,6 +159,21 @@ bool Button::handleEvent(SDL_Event* e, int& sound) {
 					else if (butt == 33){
 						if (displayPtr->getMenu() == Display::Menu::roomMenu && !socketPtr->getIsOwner())
 							socketPtr->sendReadySignal();
+					}
+					else if (butt == 34){
+						if (displayPtr->getMenu() == Display::Menu::loginMenu){
+							setButtonEditing(USERNAME_PLACEHOLDER);
+						}
+					}
+					else if (butt == 35){
+						if (displayPtr->getMenu() == Display::Menu::loginMenu){
+							setButtonEditing(PASSWORD_PLACEHOLDER);
+						}
+					}
+					else if (butt == 36){
+						if (displayPtr->getMenu() == Display::Menu::loginMenu){
+							socketPtr->sendLoginSignal();
+						}
 					}
 					break;
 					case SDL_MOUSEBUTTONUP:
@@ -168,6 +186,12 @@ bool Button::handleEvent(SDL_Event* e, int& sound) {
 					clicking = true;
 
           if(butt == 31){
+            setButtonNotEditing();
+          }
+					if(butt == 34){
+            setButtonNotEditing();
+          }
+					if(butt == 35){
             setButtonNotEditing();
           }
           break;
@@ -190,7 +214,9 @@ void Button::setButton(std::string newText, TTF_Font* newFont, SDL_Color newColo
   setButtonTextColor(newColor);
 }
 
-void Button::setButtonEditing(){
+void Button::setButtonEditing(std::string defaultValue){
+	if (defaultValue == buttonText)
+		buttonText = "";
   isEditing = true;
   inputText.assign(buttonText);
 }

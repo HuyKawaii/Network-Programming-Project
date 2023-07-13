@@ -13,6 +13,10 @@
 #include <string>
 #include "common.h"
 
+#define ROOM_CODE_PLACEHOLDER "Enter code here"
+#define USERNAME_PLACEHOLDER "Username"
+#define PASSWORD_PLACEHOLDER "Password"
+
 class Board;
 class Display;
 class ClientSocket;
@@ -28,6 +32,7 @@ class Button {
 		int getY() const { return pos.y; };
 		int getW() const { return w; };
 		int getH() const { return h; };
+		int getButt() { return butt; };
 		bool getInside() const { return inside; };
 		bool getClicking() const { return clicking; };
     bool getIsEditing() const { return isEditing; };
@@ -47,7 +52,7 @@ class Button {
     void setButtonTextColor(SDL_Color newColor) { buttonTextColor = newColor; };
     void setButtonTextFont(TTF_Font* newFont) {buttonTextFont = newFont; };
     void setButton(std::string newText, TTF_Font* newFont, SDL_Color newColor);
-    void setButtonEditing();
+    void setButtonEditing(std::string defaultValue);
     void setButtonNotEditing();
 	private:
 		Board * boardPtr;

@@ -17,7 +17,7 @@
 #include "ltexture.h"
 #include "square.h"
 
-#define NUMBER_OF_BUTTOMS 34
+#define NUMBER_OF_BUTTOMS 37
 #define ON_HOVER_COLOR {100, 0, 0}
 #define NUMBER_OF_INPUTFIELDS 1
 class ClientSocket;
@@ -25,7 +25,7 @@ class ClientSocket;
 class Display {
 	friend class Board;
 	public:
-    enum Menu { mainMenu, onlineMenu, offlineMenu, roomMenu, joinRoomMenu};
+    enum Menu {loginMenu, mainMenu, onlineMenu, offlineMenu, roomMenu, joinRoomMenu};
 		Display(Board * b, ClientSocket * socket);
 		~Display();
 	
@@ -79,7 +79,7 @@ class Display {
 			 titleTextTexture, turnText, checkText, moveText,
 			 rankText, fileText, onlineModeText, playerNameText, opponentNameText, 
        roomCodeText, roomNotFoundText, waitForServerText, roomIsFullText, 
-			 playerSideText, guestReadyText;
+			 playerSideText, guestReadyText, loginStatusText;
 		SDL_Color textColor;
 		std::string rankStr, fileStr;
 };

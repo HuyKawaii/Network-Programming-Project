@@ -26,6 +26,8 @@ public:
   bool availableOwnerMove() { return ownerMoveFrom != -1; };
   bool getGuestReady() { return isGuestReady; };
   bool getNewGuestReady() { return newGuestReady; };
+  bool getOwnerResign() { return ownerResign; };
+  bool getGuestResign() { return guestResign; };
 
   //MUTATOR
   void setRoomOccupied(bool b) { isOccupied = b; };
@@ -42,7 +44,8 @@ public:
   void removeGuest();
   void setGuestReady(bool isGuestReady) { this->isGuestReady = isGuestReady; };
   void setNewGuestReady(bool newGuestReady) { this->newGuestReady = newGuestReady; };
-
+  void setGuestResign(bool guestResign) { this->guestResign = guestResign; };
+  void setOwnerResign(bool ownerResign) { this->ownerResign = ownerResign; };
 private:
   std::string roomCode;
   std::thread::id owner;
@@ -57,5 +60,7 @@ private:
   bool isOccupied;
   bool isGameStarting;
   bool isGuestReady;
+  bool ownerResign;
+  bool guestResign;
   bool newGuest, newOwner, newGuestReady;
 };

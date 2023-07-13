@@ -84,6 +84,7 @@ class Board {
 		unsigned long getZobrist() const { return zobrist.key; };
 	  bool getPlayerSide() { return playerSide; };
     gamemode getGamemode() const { return gamemode; };
+		int getWinner() { return winner; };
 		//MUTATORS
 		void setMove(int mF, int mT) { moveFrom = mF; moveTo = mT; };
 		void setPly(int newPly) { ply = newPly; };
@@ -98,6 +99,7 @@ class Board {
 		void flipBoard() { flipped = flipped ? 0 : 1; };
     void setPlayerSide(bool playerSide) { this->playerSide = playerSide; };
     void setGamemode(gamemode gamemode) { this->gamemode = gamemode; };
+		void setWinner(int winner) { this->winner = winner; };
 		//OPERATOR OVERLOADS
 		int& operator [](const int index);
 		const int& operator [](const int index) const;
@@ -171,6 +173,7 @@ class Board {
 		int whiteMaterial, blackMaterial, castling;
     bool playerSide;
     gamemode gamemode;
+		int winner = 0;
 		//For the line below.. 0: none, 1: white, 2: black 
 		int sideInCheck, sideInCheckmate;
 		bool side, whiteCastled, blackCastled;

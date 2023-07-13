@@ -4,8 +4,11 @@
 #include <ctime>
 #include <iostream>
 #include <sstream>
+#include "account.cpp"
+#include <fstream>
+#include <map>
 
-#define RECEIVE_BUFFER_SIZE 32
+#define RECEIVE_BUFFER_SIZE 64
 #define MAX_CLIENT 100
 #define CREATE_ROOM_CODE "CREATE"
 #define START_GAME_CODE "START"
@@ -16,11 +19,16 @@
 #define OPPONENT_LEAVE_ROOM_CODE "OPPOLEAVE"
 #define MOVE_CODE "MOVE"
 #define READY_CODE "READY"
+#define RESIGN_CODE "RESIGN"
+#define LOGIN_CODE "LOGIN"
 
 void handle_client(int client_socket);
 std::string gen_random(const int len);
+std::map<std::string, Account> initializeAccountList();
+void displayAccountList(const std::map<std::string, Account>& accountList);
 
 Room roomList[MAX_CLIENT];
+std::map<std::string, Account> accountList;
 
 int main()
 {
@@ -30,8 +38,8 @@ int main()
   int client_length;
   SOCKET client_so;
 
-  srand((unsigned)time(NULL) * getpid());
-
+  accountList = initializeAccountList();
+  
   client_length = sizeof(client);
   while (client_so = accept(serverSock.GetServerSocket(), (struct sockaddr *)&client, &client_length))
   {
@@ -236,6 +244,32 @@ void handle_client(int client_socket)
         message = code + '\n' + token + '\n';
         send(client_socket, message.c_str(), RECEIVE_BUFFER_SIZE, 0);
       }
+      else if (!token.compare(RESIGN_CODE)){
+        if (roomList[roomIndex].isGuest(threadId))
+          roomList[roomIndex].setGuestResign(true);
+        else
+          roomList[roomIndex].setOwnerResign(true);
+      }
+      else if (!token.compare(LOGIN_CODE)){
+        std::string username, password;
+        std::getline(ss, token, '\n');
+        std::cout << token << '\n';
+        username = token;
+        std::getline(ss, token, '\n');
+        std::cout << token << '\n';
+        password = token;
+        //Find account logic here
+        Account::Status status;
+        std::string statusMessage;
+        for (auto& account : accountList) {
+          status = account.second.attempLogin(username, password);
+          if (status != Account::Status::logged_out)
+            break;
+        }
+        code.assign(LOGIN_CODE);
+        message = code + "\n" + Account::Stringify(status) + '\n';
+        send(client_socket, message.c_str(), RECEIVE_BUFFER_SIZE, 0);
+      }  
     }
     else if (bytes_received == 0)
     {
@@ -297,9 +331,63 @@ void handle_client(int client_socket)
         send(client_socket, message.c_str(), RECEIVE_BUFFER_SIZE, 0);
         roomList[roomIndex].setNewGuestReady(false);
       }
+      if (roomList[roomIndex].getGuestResign() && roomList[roomIndex].isOwner(threadId)){
+        code.assign(RESIGN_CODE);
+        message = code + '\n';
+        send(client_socket, message.c_str(), RECEIVE_BUFFER_SIZE, 0);
+        roomList[roomIndex].setGuestResign(false);
+      }
+      if (roomList[roomIndex].getOwnerResign() && roomList[roomIndex].isGuest(threadId)){
+        code.assign(RESIGN_CODE);
+        message = code + '\n';
+        send(client_socket, message.c_str(), RECEIVE_BUFFER_SIZE, 0);
+        roomList[roomIndex].setOwnerResign(false);
+      }
     }
   }
 
   std::cout << "Closing client socket..";
   closesocket(client_socket);
 }
+
+std::map<std::string, Account> initializeAccountList(){
+  std::map<std::string, Account> accountList;
+  std::ifstream inputFile("data.txt");
+
+  if (!inputFile) {
+    std::cout << "Error opening the file." << std::endl;
+    exit(1);
+  }
+
+  std::string line;
+  std::string username;
+  std::string password;
+  std::string status;
+  int lineCount = 0;
+  while (std::getline(inputFile, line)) {
+    switch (lineCount % 3) {
+      case 0:
+          username = line;
+          break;
+      case 1:
+          password = line;
+          break;
+      case 2:
+          status = line;
+          accountList.emplace(username, Account(username, password, status));
+          break;
+    }
+    lineCount++;
+  }
+
+  return accountList;
+}
+
+// void displayAccountList(const std::map<std::string, Account>& accountList) {
+//     for (const auto& account : accountList) {
+//         std::cout << "Username: " << account.second.username << std::endl;
+//         std::cout << "Password: " << account.second.password << std::endl;
+//         std::cout << "Status: " << account.second.status << std::endl;
+//         std::cout << std::endl;
+//     }
+// }

@@ -79,6 +79,28 @@ ClientSocket::ClientSocket(std::string server_ip, unsigned short server_port)
   isGuestReady = false;
 }
 
+void ClientSocket::sendLoginSignal()
+{
+  int bytes_received;
+  std::string message;
+  std::string code;
+  char buffer[RECEIVE_BUFFER_SIZE];
+
+  code.assign(LOGIN_CODE);
+  message = code + '\n' + username + '\n' + password + '\n';
+  if (send(so, message.c_str(), RECEIVE_BUFFER_SIZE, 0) == SOCKET_ERROR)
+    error("Error sending message to server. Exiting\n");
+}
+
+void ClientSocket::handleLoginSignal(std::string reply, std::string name)
+{
+  loginStatus = reply;
+  if (reply == "logged_in"){
+    displayPtr->setMenu(Display::Menu::mainMenu);
+    this->name = name;
+  }
+}
+
 void ClientSocket::sendJoinRoom()
 {
   int bytes_received;
@@ -238,6 +260,27 @@ void ClientSocket::handleReadySignal(int readyStatus){
   isGuestReady = readyStatus;
 }
 
+void ClientSocket::sendResignSignal(){
+  std::string code;
+  std::string message;
+  char buffer[RECEIVE_BUFFER_SIZE];
+
+  std::cout << "Sending resign signal\n";
+  code.assign(RESIGN_CODE);
+  message = code + '\n';
+  if (send(so, message.c_str(), RECEIVE_BUFFER_SIZE, 0) == SOCKET_ERROR)
+    error("Error sending message to server. Exiting\n");
+}
+
+void ClientSocket::handleResignSignal(){
+  //Do something
+  std::cout << "Received resign singal";
+  if (boardPtr->getPlayerSide())
+    boardPtr->setWinner(1);
+  else 
+    boardPtr->setWinner(2);
+}
+
 void ClientSocket::handleBufferRead()
 {
   int bytes_received = 0;
@@ -305,6 +348,19 @@ void ClientSocket::handleBufferRead()
         std::getline(ss, token, '\n');
         std::cout << "Token: " << token << '\n';
         handleReadySignal(std::stoi(token));
+      }
+      else if (!token.compare(RESIGN_CODE))
+      {
+        handleResignSignal();
+      }
+      else if (!token.compare(LOGIN_CODE))
+      {
+        std::getline(ss, token, '\n');
+        std::cout << "Token: " << token << '\n';
+        std::string reply = token;
+        std::getline(ss, token, '\n');
+        std::cout << "Token: " << token << '\n';
+        handleLoginSignal(reply, token);
       }
     }
     else if (bytes_received == 0)

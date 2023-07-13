@@ -62,9 +62,7 @@ void Board::updateDisplay(const int& mF, const int& mT) {
 
 void Board::startGame(){
 	start = true;
-	if (gamemode == gamemode::online){
-		display.setPlayerSideText();
-	}
+	winner = 0;
 	socketPtr->setGuestReady(false);
 }
 
@@ -444,6 +442,12 @@ void Board::handleInput(int& mF, int& mT, SDL_Event* e) {
 	}
 
 	if (mF != -1 && mT != -1) {
+		if (winner != 0){
+			std::cout << "Game already over";
+			mF = mT = -1;
+			return;
+		}
+
 		mF = from64(mF);
 		mT = from64(mT);
 		if (legalMove(mF, mT, getSide(), 1)) {
@@ -454,8 +458,16 @@ void Board::handleInput(int& mF, int& mT, SDL_Event* e) {
 			checkCheck(getSide());
 			//std::cout << "Current FEN (ply " << ply << ", move " << (ply-1)/2+1 << "): " << getFEN() << '\n';
 			//std::cout << "Current Zobrist: " << zobrist.key << '\n';
-			if (drawCheck() == 2)
+			if (drawCheck() == 2){
 				std::cout << "Threefold repetition.\n";
+				winner = 3;
+			}
+			if (getSideInCheckmate() == 1)
+				winner = 2;
+			else if (getSideInCheck() == 2)
+				winner = 1;
+			else
+				winner = 0;
 			//std::cout << "-----------------------------------------------------------------------------\n\n";
 			//eval(true);
 /*
@@ -468,7 +480,7 @@ void Board::handleInput(int& mF, int& mT, SDL_Event* e) {
 			std::cout << '\n';
 */
 			//Send signal after each move if play online
-			if (gamemode == gamemode::online)
+			if (gamemode == gamemode::online && e != nullptr)
 				socketPtr->sendMoveSignal(to64(moveFrom), to64(moveTo));
 		}
 		mF = mT = -1;

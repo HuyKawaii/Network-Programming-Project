@@ -17,8 +17,6 @@
 #include "common.h"
 #include "clientSocket.h"
 
-#define RECEIVE_BUFFER_SIZE 32
-
 bool quit = false, muted = true, start = false, isTyping = false;
 std::string inputText = "";
 using namespace std;
