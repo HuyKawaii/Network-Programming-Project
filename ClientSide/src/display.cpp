@@ -295,11 +295,11 @@ void Display::setButtons()
 
 	// Roomcode input field
 	buttons[31]	= new InputField();
-	buttons[31]->setPos(BXSTART + B_SIZE + 300, BYSTART + 400);
+	buttons[31]->setPos(BXSTART + B_SIZE + 180, BYSTART + 400);
 	buttons[31]->setSize(150, 50);
 	buttons[31]->setButton(ROOM_CODE_PLACEHOLDER, Garamond28, textColor);
 
-	buttons[32]->setPos(BXSTART + B_SIZE + 320, BYSTART + 450);
+	buttons[32]->setPos(BXSTART + B_SIZE + 230, BYSTART + 450);
 	buttons[32]->setSize(150, 50);
 	buttons[32]->setButton("Join", Garamond28, textColor);
 
